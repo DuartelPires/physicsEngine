@@ -15,6 +15,10 @@ class CirclePlayer {
     CirclePlayer(float inicialX, float inicialY);
 
     void Draw();
+    void DrawUI();
     void move();
     void simulate(const BoxRectangle& box);
+
+    float getX() const { return x; }
+    float getY() const { return y; }
 };

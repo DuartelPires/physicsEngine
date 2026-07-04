@@ -1,6 +1,12 @@
 # Prerequisites
 *.d
 
+#obj dir
+obj/
+
+# compiled file
+physicsEngine
+
 # Compiled Object files
 *.slo
 *.lo

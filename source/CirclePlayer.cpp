@@ -12,6 +12,9 @@ CirclePlayer::CirclePlayer(float inicialX, float inicialY) : x(inicialX), y(inic
 void CirclePlayer::Draw() {
     DrawCircle(x, y, radius, BLACK);
     DrawCircle(x, y, radius - 4, RAYWHITE);
+}
+
+void CirclePlayer::DrawUI() {
     DrawText(TextFormat("X: %i", static_cast<int>(x)), 10, 30, 20, GREEN);
     DrawText(TextFormat("Y: %i", static_cast<int>(y)), 10, 50, 20, GREEN);
 }
@@ -22,8 +25,7 @@ void CirclePlayer::move() {
 }
 
 void CirclePlayer::simulate(const BoxRectangle& box) {
-    // vetores diretores da caixa
-    float rad = box.getRad();
+    //vetores diretores da caixa
     Vector2 rAxisX = box.getRAxisX();
     Vector2 rAxisY = box.getRAxisY();
 
@@ -50,7 +52,7 @@ void CirclePlayer::simulate(const BoxRectangle& box) {
         float distance = std::sqrt(distanceSquared);
         if (distance == 0.0f) return;
 
-        // Vetor normal da colisão no espaço local
+        //vetor normal da colisão no espaço local
         Vector2 localNormal = { distX / distance, distY / distance };
 
         Vector2 normal = {

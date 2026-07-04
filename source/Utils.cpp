@@ -1,13 +1,13 @@
 #include "Utils.h"
 #include "BoxRectangle.h"
+#include "CirclePlayer.h"
 #include <raylib.h>
 #include <algorithm>
 #include <cmath>
 
-void tryDrawRectangle(const Vector2& firstVertice, Vector2& secondVertice, bool& isDrawing, std::vector<std::unique_ptr<BoxRectangle>>& boxList){
+void tryDrawRectangle(const Vector2& firstVertice, Vector2& secondVertice, bool& isDrawing, std::vector<std::unique_ptr<BoxRectangle>>& boxList, Camera2D& camera){
   if(!isDrawing) return;
-  
-  secondVertice = GetMousePosition();
+  secondVertice = GetScreenToWorld2D(GetMousePosition(), camera);
 
   float x = std::min(firstVertice.x, secondVertice.x);
   float y = std::min(firstVertice.y, secondVertice.y);
@@ -26,7 +26,8 @@ void tryDrawRectangle(const Vector2& firstVertice, Vector2& secondVertice, bool&
   }
 }
 
-void checkCommands(bool& isDrawing, Vector2& firstVertice,std::vector<std::unique_ptr<BoxRectangle>>& boxList){
+void checkCommands(bool& isDrawing, Vector2& firstVertice, std::vector<std::unique_ptr<BoxRectangle>>& boxList, bool& isFollowingPlayer,  Camera2D& camera){
+    //hides cursor
     if(IsKeyPressed(KEY_H)){
       if(IsCursorHidden()) ShowCursor();
       else HideCursor();
@@ -34,17 +35,36 @@ void checkCommands(bool& isDrawing, Vector2& firstVertice,std::vector<std::uniqu
     //começa o desenho ao pressionar
     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
       isDrawing = true;
-      firstVertice = GetMousePosition();
+      firstVertice = GetScreenToWorld2D(GetMousePosition(), camera);
     }
+    //undo last added box
     if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_Z)) {
       if(boxList.size() > 4){
         boxList.pop_back();
       }
     }
+    //camera follows ball
+    if(IsKeyPressed(KEY_F)){
+      if(isFollowingPlayer){
+        isFollowingPlayer = false;
+      }else{
+        isFollowingPlayer = true;
+      }
+    }
+    //adds or removes zoom
+    if (IsKeyDown(KEY_J))
+      if((camera.zoom + 0.1f) <= 4 ){
+        camera.zoom += 0.01f;
+      }
+
+    if (IsKeyDown(KEY_K))
+      if((camera.zoom - 0.1f )  >= 0){
+        camera.zoom -= 0.01f;
+      }
 }
 
 void createOutsideAngledBox(std::vector<std::unique_ptr<BoxRectangle>>& boxList, float width, float height){
-  int boxWidth = 400;
+  int boxWidth = 1600;
   int boxHeight = 15;
 
   float cx = width / 2.0f;
@@ -62,3 +82,12 @@ void createOutsideAngledBox(std::vector<std::unique_ptr<BoxRectangle>>& boxList,
   boxList.push_back(std::move(rightRectangle));
   boxList.push_back(std::move(bottomRectangle));
 }
+
+  void DrawControls(){
+    DrawText("Change focus: F", 10, 70, 20, GREEN);
+    DrawText("Zoom: J", 10, 90, 20, GREEN);
+    DrawText("Unzoom: K", 10, 110, 20, GREEN);
+    DrawText("Show Cursor: H", 10, 130, 20, GREEN);
+    DrawText("Add block: Click and drag", 10, 150, 20, GREEN);
+    DrawText("Undo: Ctrl + Z", 10, 170, 20, GREEN);
+  }
